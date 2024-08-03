@@ -1,0 +1,80 @@
+image: mcr.microsoft.com/dotnet/sdk:8.0   # Ofifcial .NET Core SDK version 8.0 Docker image provided by Microsoft
+
+stages:
+  - build
+  - test
+
+variables:
+    PATH_STUDENT_PRODUCTS: "Services/StudentProductMicroservice"
+    PATH_IDENTITY: "Services/IdentityMicroservice"
+    PATH_NOTIFICATIONS: "Services/NotificationMicroservice"
+    PATH_TRANSACTIONS: "Services/TransactionMicroservice"
+    PATH_DEBT: "Services/DebtMicroservice"
+    TEST_PATH_STUDENT_PRODUCTS: "Services/StudentProductMicroservice.Tests"
+    TEST_PATH_TRANSACTION: "Services/TransactionMicroservice.Tests"
+
+before_script:
+  - echo "Current directory is $PWD... starting build..."
+
+# Note that .NET analyzers run on a build, see https://stackoverflow.com/questions/69680054/how-do-i-run-code-analysis-for-net-application-using-microsoft-codeanalysis-net.
+build-analysis-student-product-microservice:
+  stage: build
+  script:
+    - cd $PATH_STUDENT_PRODUCTS
+    - dotnet restore                                          # Restores the NuGet packages required by the .NET Core app
+    - dotnet build                                            # Compiles the app
+    - echo "Compiling the code and running .NET analyzers for Student Product Microservice..."
+    - echo "Compile and static analysis complete."
+
+test-student-product-microservice:
+  stage: test
+  needs: [build-analysis-student-product-microservice]
+  script:
+    - cd $TEST_PATH_STUDENT_PRODUCTS
+    - dotnet test                                         
+    - echo "Running unit tests in Student Product microservice..."
+
+build-analysis-transaction-microservice:
+  stage: build
+  script:
+    - cd $PATH_TRANSACTIONS
+    - dotnet restore                                         
+    - dotnet build                                     
+    - echo "Compiling the code and running .NET analyzers for Transaction Microservice..."
+    - echo "Compile and static analysis complete."
+
+test-transaction-microservice:
+  stage: test
+  needs: [build-analysis-transaction-microservice]
+  script:
+    - cd $TEST_PATH_TRANSACTION
+    - dotnet test                                         
+    - echo "Running unit tests in Transaction microservice..."
+
+
+build-analysis-debt-microservice:
+  stage: build
+  script:
+    - cd $PATH_DEBT
+    - dotnet restore                                         
+    - dotnet build                                     
+    - echo "Compiling the code and running .NET analyzers for Debt Microservice..."
+    - echo "Compile and static analysis complete."
+
+build-analysis-identity-microservice:
+  stage: build
+  script:
+    - cd $PATH_IDENTITY
+    - dotnet restore                                         
+    - dotnet build                                     
+    - echo "Compiling the code and running .NET analyzers for Identity Microservice..."
+    - echo "Compile and static analysis complete."
+
+build-notification-microservice:
+  stage: build
+  script:
+    - cd $PATH_NOTIFICATIONS
+    - dotnet restore                                         
+    - dotnet build                                     
+    - echo "Compiling the code and running .NET analyzers for Notifications Microservice..."
+    - echo "Compile and static analysis complete."
